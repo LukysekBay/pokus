@@ -9,6 +9,42 @@ configure_aws_cli(){
     aws configure set default.output json
 }
 
+push_ecr_image(){
+    eval $(aws ecr get-login --region eu-central-1)
+    docker push $AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/dev_robeeto:$CIRCLE_SHA1
+}
+
+make_task_def(){
+    task_template='[
+	{
+	    "name": "dev_robeeto-webapp",
+	    "image": "%s.dkr.ecr.eu-central-1.amazonaws.com/dev_robeeto:%s",
+	    "essential": true,
+	    "memory": 200,
+	    "cpu": 10,
+	    "portMappings": [
+		{
+		    "containerPort": 8080,
+		    "hostPort": 8080
+		}
+	    ]
+	}
+    ]'
+    
+    task_def=$(printf "$task_template" $AWS_ACCOUNT_ID $CIRCLE_SHA1)
+}
+
+register_definition() {
+
+    if revision=$(aws ecs register-task-definition --container-definitions "$task_def" --family $family | $JQ '.taskDefinition.taskDefinitionArn'); then
+        echo "Revision: $revision"
+    else
+        echo "Failed to register task definition"
+        return 1
+    fi
+
+}
+
 deploy_cluster() {
 
     family="dev_robeeto-pokus"
@@ -36,43 +72,6 @@ deploy_cluster() {
     done
     echo "Service update took too long."
     return 1
-}
-
-make_task_def(){
-    task_template='[
-	{
-	    "name": "dev_robeeto-webapp",
-	    "image": "%s.dkr.ecr.eu-central-1.amazonaws.com/dev_robeeto:%s",
-	    "essential": true,
-	    "memory": 200,
-	    "cpu": 10,
-	    "portMappings": [
-		{
-		    "containerPort": 8080,
-		    "hostPort": 8080
-		}
-	    ]
-	}
-    ]'
-    
-    task_def=$(printf "$task_template" $AWS_ACCOUNT_ID $CIRCLE_SHA1)
-}
-
-push_ecr_image(){
-    eval $(aws ecr get-login --region eu-central-1)
-                #560613464802.dkr.ecr.eu-central-1.amazonaws.com/dev_robeeto
-    docker push 560613464802.dkr.ecr.eu-central-1.amazonaws.com/dev_robeeto:$CIRCLE_SHA1
-}
-
-register_definition() {
-
-    if revision=$(aws ecs register-task-definition --container-definitions "$task_def" --family $family | $JQ '.taskDefinition.taskDefinitionArn'); then
-        echo "Revision: $revision"
-    else
-        echo "Failed to register task definition"
-        return 1
-    fi
-
 }
 
 configure_aws_cli

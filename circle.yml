@@ -7,7 +7,7 @@ machine:
 dependencies:
  override:
    - docker info
-   - docker build --rm=false -t 560613464802.dkr.ecr.eu-central-1.amazonaws.com/dev_robeeto .
+   - docker build --rm=false -t 560613464802.dkr.ecr.eu-central-1.amazonaws.com/dev_robeeto:$CIRCLE_SHA1 .
 
 test:
  post:

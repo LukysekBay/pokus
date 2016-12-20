@@ -11,11 +11,11 @@ configure_aws_cli(){
 
 deploy_cluster() {
 
-    family="sample-webapp-task-family"
+    family="dev_robeeto-pokus"
 
     make_task_def
     register_definition
-    if [[ $(aws ecs update-service --cluster sample-webapp-cluster --service sample-webapp-service --task-definition $revision | \
+    if [[ $(aws ecs update-service --cluster dev_robeeto-cluster --service dev_robeeto-service --task-definition $revision | \
                    $JQ '.service.taskDefinition') != $revision ]]; then
         echo "Error updating service."
         return 1
@@ -24,7 +24,7 @@ deploy_cluster() {
     # wait for older revisions to disappear
     # not really necessary, but nice for demos
     for attempt in {1..30}; do
-        if stale=$(aws ecs describe-services --cluster sample-webapp-cluster --services sample-webapp-service | \
+        if stale=$(aws ecs describe-services --cluster dev_robeeto-cluster --services dev_robeeto-service | \
                        $JQ ".services[0].deployments | .[] | select(.taskDefinition != \"$revision\") | .taskDefinition"); then
             echo "Waiting for stale deployments:"
             echo "$stale"
@@ -41,15 +41,15 @@ deploy_cluster() {
 make_task_def(){
     task_template='[
 	{
-	    "name": "go-sample-webapp",
-	    "image": "%s.dkr.ecr.us-east-1.amazonaws.com/go-sample-webapp:%s",
+	    "name": "dev_robeeto-webapp",
+	    "image": "%s.dkr.ecr.eu-central-1.amazonaws.com/dev_robeeto:%s",
 	    "essential": true,
 	    "memory": 200,
 	    "cpu": 10,
 	    "portMappings": [
 		{
 		    "containerPort": 8080,
-		    "hostPort": 80
+		    "hostPort": 8080
 		}
 	    ]
 	}
@@ -77,4 +77,4 @@ register_definition() {
 
 configure_aws_cli
 push_ecr_image
-#deploy_cluster
+deploy_cluster

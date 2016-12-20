@@ -60,7 +60,7 @@ make_task_def(){
 
 push_ecr_image(){
     eval $(aws ecr get-login --region eu-central-1)
-    docker push $AWS_ACCOUNT_ID.560613464802.dkr.ecr.eu-central-1.amazonaws.com/dev_robeeto:$CIRCLE_SHA1
+    docker push $AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/dev_robeeto:$CIRCLE_SHA1
 }
 
 register_definition() {

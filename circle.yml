@@ -10,4 +10,4 @@ dependencies:
 test:
  post:
    - docker run -d -p 8080:8080 lukysekbay/pokus; sleep 10
-   - curl --retry 10 --retry-delay 5 localhost:8080 | grep "Hello World!"
+   - curl --retry 10 --retry-delay 5 localhost:8080 | grep "Hello world"

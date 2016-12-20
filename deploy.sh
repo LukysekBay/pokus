@@ -60,6 +60,7 @@ make_task_def(){
 
 push_ecr_image(){
     eval $(aws ecr get-login --region eu-central-1)
+                #560613464802.dkr.ecr.eu-central-1.amazonaws.com/dev_robeeto
     docker push 560613464802.dkr.ecr.eu-central-1.amazonaws.com/dev_robeeto:$CIRCLE_SHA1
 }
 

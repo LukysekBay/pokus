@@ -1,15 +1,17 @@
 machine:
+ environment:
+   AWS_ACCOUNT_ID: "560613464802"
  services:
    - docker
 
 dependencies:
  override:
    - docker info
-   - docker build --rm=false -t lukysekbay/pokus .
+   - docker build --rm=false -t 560613464802.dkr.ecr.eu-central-1.amazonaws.com/dev_robeeto .
 
 test:
  post:
-   - docker run -d -p 8080:8080 lukysekbay/pokus; sleep 10
+   - docker run -d -p 8080:8080 560613464802.dkr.ecr.eu-central-1.amazonaws.com/dev_robeeto:$CIRCLE_SHA1; sleep 10
    - curl --retry 10 --retry-delay 5 localhost:8080 | grep "Hello world"
 
 deployment:

@@ -47,7 +47,7 @@ deploy_cluster() {
 make_task_def(){
     task_template='[
 	{
-	    "name": "$AWS_PROJECT_NAME-$CIRCLE_PROJECT_REPONAME",
+	    "name": "%s",
 	    "image": "%s.dkr.ecr.%s.amazonaws.com/%s:%s",
 	    "essential": true,
 	    "memory": 200,
@@ -61,8 +61,8 @@ make_task_def(){
 	}
     ]'
     
-    task_def=$(printf "$task_template" $AWS_ACCOUNT_ID $AWS_REGION $AWS_PROJECT_NAME $CIRCLE_PROJECT_REPONAME-$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM-$CIRCLE_SHA1)
-    echo "Task def: \n$task_def"
+    task_def=$(printf "$task_template" $AWS_PROJECT_NAME-$CIRCLE_PROJECT_REPONAME $AWS_ACCOUNT_ID $AWS_REGION $AWS_PROJECT_NAME $CIRCLE_PROJECT_REPONAME-$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM-$CIRCLE_SHA1)
+    echo "Task def: $task_def"
 }
 
 register_definition() {

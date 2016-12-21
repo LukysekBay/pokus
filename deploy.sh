@@ -11,14 +11,14 @@ configure_aws_cli(){
 
 push_ecr_image(){
     eval $(aws ecr get-login --region $AWS_REGION)
-    docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/dev_robeeto:$CIRCLE_PROJECT_REPONAME-$CIRCLE_BRANCH-$CIRCLE_SHA1
+    docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_PROJECT_NAME:$CIRCLE_PROJECT_REPONAME-$CIRCLE_BRANCH-$CIRCLE_SHA1
 }
 
 make_task_def(){
     task_template='[
 	{
-	    "name": "dev_robeeto-webapp",
-	    "image": "%s.dkr.ecr.$AWS_REGION.amazonaws.com/dev_robeeto:%s",
+	    "name": "$AWS_PROJECT_NAME-frontend",
+	    "image": "%s.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_PROJECT_NAME:%s",
 	    "essential": true,
 	    "memory": 200,
 	    "cpu": 10,

@@ -62,6 +62,7 @@ make_task_def(){
     ]'
     
     task_def=$(printf "$task_template" $AWS_ACCOUNT_ID $CIRCLE_PROJECT_REPONAME-$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM-$CIRCLE_SHA1)
+    echo "$task_def"
 }
 
 register_definition() {

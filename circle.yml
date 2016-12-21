@@ -2,7 +2,7 @@ machine:
  environment:
    AWS_ACCOUNT_ID: "560613464802"
    AWS_REGION: "eu-central-1"
-   AWS_PROJECT_NAME: "dev_robeeto"
+   AWS_PROJECT_NAME: "dev-robeeto"
    
  services:
    - docker

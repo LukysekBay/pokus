@@ -14,10 +14,40 @@ push_ecr_image(){
     docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_PROJECT_NAME:$CIRCLE_PROJECT_REPONAME-$CIRCLE_BRANCH-$CIRCLE_SHA1
 }
 
+deploy_cluster() {
+
+    family="$AWS_PROJECT_NAME-$CIRCLE_PROJECT_REPONAME"
+
+    make_task_def
+    register_definition
+    if [[ $(aws ecs update-service --cluster devrobeetocluster --service dev_robeeto-service --task-definition $revision | \
+                   $JQ '.service.taskDefinition') != $revision ]]; then
+        echo "Error updating service."
+        return 1
+    fi
+
+    # wait for older revisions to disappear
+    # not really necessary, but nice for demos
+    for attempt in {1..30}; do
+        if stale=$(aws ecs describe-services --cluster devrobeetocluster --services dev_robeeto-service | \
+                       $JQ ".services[0].deployments | .[] | select(.taskDefinition != \"$revision\") | .taskDefinition"); then
+            echo "Waiting for stale deployments:"
+            echo "$stale"
+            sleep 5
+        else
+            echo "Deployed!"
+            return 0
+        fi
+    done
+    echo "Service update took too long."
+    return 1
+}
+
+
 make_task_def(){
     task_template='[
 	{
-	    "name": "$AWS_PROJECT_NAME-frontend",
+	    "name": "$AWS_PROJECT_NAME-$CIRCLE_PROJECT_REPONAME",
 	    "image": "%s.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_PROJECT_NAME:%s",
 	    "essential": true,
 	    "memory": 200,
@@ -45,34 +75,6 @@ register_definition() {
 
 }
 
-deploy_cluster() {
-
-    family="dev_robeeto-pokus"
-
-    make_task_def
-    register_definition
-    if [[ $(aws ecs update-service --cluster devrobeetocluster --service dev_robeeto-service --task-definition $revision | \
-                   $JQ '.service.taskDefinition') != $revision ]]; then
-        echo "Error updating service."
-        return 1
-    fi
-
-    # wait for older revisions to disappear
-    # not really necessary, but nice for demos
-    for attempt in {1..30}; do
-        if stale=$(aws ecs describe-services --cluster devrobeetocluster --services dev_robeeto-service | \
-                       $JQ ".services[0].deployments | .[] | select(.taskDefinition != \"$revision\") | .taskDefinition"); then
-            echo "Waiting for stale deployments:"
-            echo "$stale"
-            sleep 5
-        else
-            echo "Deployed!"
-            return 0
-        fi
-    done
-    echo "Service update took too long."
-    return 1
-}
 
 configure_aws_cli
 push_ecr_image

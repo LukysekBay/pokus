@@ -5,13 +5,13 @@ JQ="jq --raw-output --exit-status"
 
 configure_aws_cli(){
     aws --version
-    aws configure set default.region eu-central-1
+    aws configure set default.region $AWS_REGION
     aws configure set default.output json
 }
 
 push_ecr_image(){
-    eval $(aws ecr get-login --region eu-central-1)
-    docker push $AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/dev_robeeto:$CIRCLE_PROJECT_REPONAME-$CIRCLE_BRANCH-$CIRCLE_SHA1
+    eval $(aws ecr get-login --region $AWS_REGION)
+    docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/dev_robeeto:$CIRCLE_PROJECT_REPONAME-$CIRCLE_BRANCH-$CIRCLE_SHA1
 }
 
 make_task_def(){

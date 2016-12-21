@@ -11,7 +11,7 @@ configure_aws_cli(){
 
 push_ecr_image(){
     eval $(aws ecr get-login --region eu-central-1)
-    docker push $AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/dev_robeeto:$CIRCLE_SHA1
+    docker push $AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/dev_robeeto:$CIRCLE_PROJECT_REPONAME-$CIRCLE_BRANCH-$CIRCLE_SHA1
 }
 
 make_task_def(){
@@ -31,7 +31,7 @@ make_task_def(){
 	}
     ]'
     
-    task_def=$(printf "$task_template" $AWS_ACCOUNT_ID $CIRCLE_SHA1)
+    task_def=$(printf "$task_template" $AWS_ACCOUNT_ID $CIRCLE_PROJECT_REPONAME-$CIRCLE_BRANCH-$CIRCLE_SHA1)
 }
 
 register_definition() {

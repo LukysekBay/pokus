@@ -11,7 +11,7 @@ configure_aws_cli(){
 
 push_ecr_image(){
     eval $(aws ecr get-login --region $AWS_REGION)
-    docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_PROJECT_NAME:$CIRCLE_PROJECT_REPONAME-$CIRCLE_BRANCH-$CIRCLE_SHA1
+    docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_PROJECT_NAME:$CIRCLE_PROJECT_REPONAME-$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM-$CIRCLE_SHA1
 }
 
 deploy_cluster() {
@@ -61,7 +61,7 @@ make_task_def(){
 	}
     ]'
     
-    task_def=$(printf "$task_template" $AWS_ACCOUNT_ID $CIRCLE_PROJECT_REPONAME-$CIRCLE_BRANCH-$CIRCLE_SHA1)
+    task_def=$(printf "$task_template" $AWS_ACCOUNT_ID $CIRCLE_PROJECT_REPONAME-$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM-$CIRCLE_SHA1)
 }
 
 register_definition() {

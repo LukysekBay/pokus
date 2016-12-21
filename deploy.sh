@@ -18,7 +18,7 @@ make_task_def(){
     task_template='[
 	{
 	    "name": "dev_robeeto-webapp",
-	    "image": "%s.dkr.ecr.eu-central-1.amazonaws.com/dev_robeeto:%s",
+	    "image": "%s.dkr.ecr.$AWS_REGION.amazonaws.com/dev_robeeto:%s",
 	    "essential": true,
 	    "memory": 200,
 	    "cpu": 10,

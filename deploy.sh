@@ -47,7 +47,7 @@ deploy_cluster() {
 make_task_def(){
     task_template='[
 	{
-	    "name": "$AWS_PROJECT_NAME-$CIRCLE_PROJECT_REPONAME",
+	    "name": "aaaaaaaaaaaaaaa",
 	    "image": "%s.dkr.ecr.$AWS_REGION.amazonaws.com/$AWS_PROJECT_NAME:%s",
 	    "essential": true,
 	    "memory": 200,
